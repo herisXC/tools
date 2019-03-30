@@ -1,0 +1,8 @@
+[Unit]
+Description=Change screen backlight
+
+[Service]
+ExecStart=/usr/sbin/backlight-changer.sh
+
+[Install]
+WantedBy=default.target
