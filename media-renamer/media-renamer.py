@@ -40,7 +40,7 @@ def create_unique_file_name(output_dir_path, formatted_date, file_ext, file_name
 
 
 def get_new_file_name(output_dir_path, media_creation_date, file_ext):
-    formatted_date = media_creation_date.strftime("%Y-%m-%d_%H:%M:%S")
+    formatted_date = media_creation_date.strftime("%Y-%m-%d_%H.%M.%S")
     return create_unique_file_name(output_dir_path, formatted_date, file_ext, 0)
 
 
@@ -60,15 +60,19 @@ def main():
 
     for root, directories, files in os.walk(args.path):
         for file in files:
-            file_ext = os.path.splitext(file)[1]
-            if file_ext.lower() in valid_photo_extensions:
-                creation_date = read_photo_original_datetime(os.path.join(root, file))
-                new_file_name = get_new_file_name(root, creation_date, file_ext)
-                rename_file(os.path.join(root, file), os.path.join(root, new_file_name + file_ext))
-            elif file_ext.lower() in valid_video_extensions:
-                creation_date = read_video_encoded_datetime(os.path.join(root, file))
-                new_file_name = get_new_file_name(root, creation_date, file_ext)
-                rename_file(os.path.join(root, file), os.path.join(root, new_file_name + file_ext))
+            try:
+                file_ext = os.path.splitext(file)[1]
+                if file_ext.lower() in valid_photo_extensions:
+                    creation_date = read_photo_original_datetime(os.path.join(root, file))
+                    new_file_name = get_new_file_name(root, creation_date, file_ext)
+                    rename_file(os.path.join(root, file), os.path.join(root, new_file_name + file_ext))
+                elif file_ext.lower() in valid_video_extensions:
+                    creation_date = read_video_encoded_datetime(os.path.join(root, file))
+                    new_file_name = get_new_file_name(root, creation_date, file_ext)
+                    rename_file(os.path.join(root, file), os.path.join(root, new_file_name + file_ext))
+            except Exception as ex:
+                print(colored("Cannot rename file: {}".format(file), "red"))
+                print(ex)
 
 
 if __name__ == '__main__':
